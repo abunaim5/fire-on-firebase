@@ -1,30 +1,46 @@
-import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, getAuth, signInWithPopup, signOut } from 'firebase/auth'
 import app from '../../firebase/firebase.init';
+import { useState } from 'react';
 
 
 const SignUp = () => {
+    const [user, setUser] = useState(null);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-    
-    const handleSignUp = () =>{
-        signInWithPopup(auth, provider)
-        .then(result => {
-            const user = result.user;
-            console.log(user);
+    const googleProvider = new GoogleAuthProvider();
+
+    const handleSignUp = () => {
+        signInWithPopup(auth, googleProvider)
+            .then(result => {
+                const loggedUser = result.user;
+                setUser(loggedUser);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
+    const handleSignOut = () =>{
+        signOut(auth)
+        .then(result=>{
+            console.log(result);
+            setUser(null);
         })
         .catch(error=>{
             console.log(error);
-        });
+        })
     }
-
-
-
 
     return (
         <div className="hero min-h-screen bg-base-200">
             <div className="hero-content flex-col lg:flex-row-reverse">
                 <div className="text-center lg:text-left">
-                    <h1 className="text-5xl font-bold">LogIn or Sign Up now</h1>
+                    {
+                        user && <div>
+                            <h1 className="text-2xl font-bold">User: {user.displayName}</h1>
+                            <p className="">Email: {user.email}</p>
+                            <img src={user.photoURL} alt="" />
+                        </div>
+                    }
                 </div>
                 <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                     <form className="card-body">
@@ -49,8 +65,13 @@ const SignUp = () => {
                     </form>
                     <div className="mb-8 mx-8 text-center space-y-2">
                         <p>Or Sign Up with</p>
-                        <button onClick={handleSignUp} className="btn btn-primary w-full">Google</button>
-                        <button className="btn btn-primary w-full">GitHub</button>
+                        {
+                            user ? <button onClick={handleSignOut} className="btn btn-primary w-full">Sign Out</button> :
+                            <div className='space-y-2'>
+                                <button onClick={handleSignUp} className="btn btn-primary w-full">Google</button>
+                                <button className="btn btn-primary w-full">GitHub</button>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
