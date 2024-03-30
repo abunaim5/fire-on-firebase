@@ -1,5 +1,25 @@
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+import app from '../../firebase/firebase.init';
+
 
 const SignUp = () => {
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    
+    const handleSignUp = () =>{
+        signInWithPopup(auth, provider)
+        .then(result => {
+            const user = result.user;
+            console.log(user);
+        })
+        .catch(error=>{
+            console.log(error);
+        });
+    }
+
+
+
+
     return (
         <div className="hero min-h-screen bg-base-200">
             <div className="hero-content flex-col lg:flex-row-reverse">
@@ -27,7 +47,11 @@ const SignUp = () => {
                             <button className="btn btn-primary">Login</button>
                         </div>
                     </form>
-                    <button className="btn btn-primary mb-8 mx-8">Sign Up</button>
+                    <div className="mb-8 mx-8 text-center space-y-2">
+                        <p>Or Sign Up with</p>
+                        <button onClick={handleSignUp} className="btn btn-primary w-full">Google</button>
+                        <button className="btn btn-primary w-full">GitHub</button>
+                    </div>
                 </div>
             </div>
         </div>
